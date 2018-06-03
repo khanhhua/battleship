@@ -18,7 +18,7 @@ public class PlayerTest {
     private JacksonTester<Player> json;
 
     @Before
-    public void setup() {
+    public void setUp() {
         JacksonTester.initFields(this, new ObjectMapper());
     }
 
