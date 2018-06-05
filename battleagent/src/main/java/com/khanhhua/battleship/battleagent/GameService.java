@@ -13,7 +13,10 @@ import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static java.lang.Thread.*;
 
@@ -170,21 +173,15 @@ public class GameService {
       }
     };
 
-    final Future future = ((ThreadPoolTaskExecutor)this.taskExecutor).submit(receiver);
-    this.taskExecutor.execute(new Runnable() {
-      public void run() {
-        try {
-          Thread.sleep(60000);
-
-          if (!future.isDone()) {
-            System.err.println("Game discovery is being terminated...");
-            future.cancel(true);
-          }
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-      }
-    });
+    try {
+      final Future future = this.taskExecutor.submit(receiver);
+      future.get(5L, TimeUnit.SECONDS);
+    } catch (InterruptedException ex) {
+      System.err.println(ex.getMessage());
+    } catch (ExecutionException ex) {
+      System.err.println(ex.getMessage());
+    } catch (TimeoutException ex) {
+    }
   }
 
   /**
