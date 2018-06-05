@@ -23,6 +23,7 @@ public class Game implements Serializable {
     public static final int STATUS_COMPLETE = 4;
 
     private long id;
+    private String uri;
     private boolean owned;
     private int size;
     private int status;
@@ -68,6 +69,11 @@ public class Game implements Serializable {
         this.ships[SHIP_7] = Ship.create(ShipType.CARRIER);
 
         this.owned = false;
+    }
+
+    public Game(long id, String uri) {
+      this.id = id;
+      this.uri = uri;
     }
 
     public long getId() {
@@ -197,5 +203,9 @@ public class Game implements Serializable {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getUri() {
+      return uri;
     }
 }
