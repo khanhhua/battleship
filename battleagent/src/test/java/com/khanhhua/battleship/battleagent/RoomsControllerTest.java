@@ -10,7 +10,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.MultiValueMap;
 
 import java.util.Collections;
 

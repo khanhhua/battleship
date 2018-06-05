@@ -3,6 +3,7 @@ package com.khanhhua.battleship.battleagent;
 import com.khanhhua.battleship.commons.Game;
 import com.khanhhua.battleship.commons.Player;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -10,28 +11,34 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.net.*;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Future;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import static java.lang.Thread.*;
 
 @Service
 public class GameService {
+  public static final int SERVICE_PORT = 9191;
+  public static final int BROADCAST_PORT = 9190;
+
   final int DEFAULT_GAME_SIZE = 10;
-  final int SERVICE_PORT = 9191;
-  final int BROADCAST_PORT = 9190;
 
   private Game localGame;
   private Player player;
   private HashMap<Long, String> remoteURLs = new HashMap<Long, String>();
 
   @Autowired
-  private ThreadPoolExecutor executor;
+  private ThreadPoolTaskExecutor taskExecutor;
   private Runnable broadcaster;
   private Runnable receiver;
 
   public Game getLocalGame() {
     return localGame;
+  }
+
+  public Set<Map.Entry<Long, String>> getRemoteURLs() {
+    return remoteURLs.entrySet();
   }
 
   public void login(String name) {
@@ -145,7 +152,7 @@ public class GameService {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             socket.receive(packet);
 
-            long gameID = Long.parseLong(new String(packet.getData()));
+            long gameID = Long.parseLong(new String(packet.getData()).trim());
             String url = String.format("http://%s:%s/api/remote/games/%d",
               packet.getAddress().getHostAddress(), SERVICE_PORT, gameID);
 
@@ -163,8 +170,8 @@ public class GameService {
       }
     };
 
-    final Future future = this.executor.submit(receiver);
-    this.executor.execute(new Runnable() {
+    final Future future = ((ThreadPoolTaskExecutor)this.taskExecutor).submit(receiver);
+    this.taskExecutor.execute(new Runnable() {
       public void run() {
         try {
           Thread.sleep(60000);
@@ -185,7 +192,7 @@ public class GameService {
    *
    * @param minutes
    */
-  public synchronized void advertize(int minutes) {
+  public synchronized void advertize(final int minutes) {
     if (localGame == null) {
       return;
     }
@@ -204,7 +211,7 @@ public class GameService {
           socket.setBroadcast(true);
           byte[] buffer = gameID.getBytes();
 
-          for (int i = 0; i < 60; i++) {
+          for (int i = 0; i < minutes * 60; i++) {
             System.out.printf("Advertizing game [%d]...\n", localGame.getId());
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, bcastAddress, BROADCAST_PORT);
             socket.send(packet);
@@ -227,6 +234,6 @@ public class GameService {
       }
     };
 
-    this.executor.execute(this.broadcaster);
+    this.taskExecutor.execute(this.broadcaster);
   }
 }
