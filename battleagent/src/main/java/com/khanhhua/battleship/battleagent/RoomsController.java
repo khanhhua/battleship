@@ -14,6 +14,7 @@ public class RoomsController {
     public String createRoom(@RequestBody Player player) {
         gameService.login(player.getName());
         gameService.createGame();
+        gameService.advertize(5);
 
         return "\"ok\"";
     }
@@ -25,5 +26,12 @@ public class RoomsController {
         return "\"ok\"";
     }
 
+    @PostMapping(value = "/start", produces = "application/json")
+    public String startGame() {
+        if (gameService.startGame()) {
+            return "\"ok\"";
+        }
 
+        return "\"error\"";
+    }
 }
