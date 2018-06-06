@@ -144,23 +144,43 @@ public class GameService {
     if (receiver != null) {
       return;
     }
+    final String localAddress;
+
+    try {
+      localAddress = InetAddress.getLocalHost().getHostAddress();
+    } catch (UnknownHostException e) {
+      return;
+    }
 
     receiver = new Runnable() {
       public void run() {
         try {
           DatagramSocket socket = new DatagramSocket(BROADCAST_PORT);
+          long now = System.currentTimeMillis();
+          long timeout = 5000L;
 
-          for (int i = 0; i < 60; i++) {
+          while (timeout > 0) {
             byte[] buffer = new byte[64];
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
             socket.receive(packet);
 
             long gameID = Long.parseLong(new String(packet.getData()).trim());
+
+            System.out.printf("Receiving game [%d] at %s...\n", gameID, packet.getAddress().getHostAddress());
+            if (!"test".equalsIgnoreCase(System.getenv("JAVA_ENV")) &&
+              localAddress.equalsIgnoreCase(packet.getAddress().getHostAddress())) {
+              return;
+            }
+
             String url = String.format("http://%s:%s/api/remote/games/%d",
               packet.getAddress().getHostAddress(), SERVICE_PORT, gameID);
 
             System.out.printf("Found %d at %s\n", gameID, url);
             remoteURLs.put(gameID, url);
+
+            long delta = System.currentTimeMillis() - now;
+            timeout -= delta;
+            now += delta;
           }
 
           GameService.this.receiver = null;

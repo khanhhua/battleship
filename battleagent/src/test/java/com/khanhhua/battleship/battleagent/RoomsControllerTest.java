@@ -19,7 +19,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Collections;
 
-import static java.lang.Thread.sleep;
 import static org.assertj.core.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
