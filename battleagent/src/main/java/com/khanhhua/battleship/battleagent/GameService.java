@@ -149,6 +149,7 @@ public class GameService {
     try {
       localAddress = InetAddress.getLocalHost().getHostAddress();
     } catch (UnknownHostException e) {
+      System.err.println("Your host has no network interface");
       return;
     }
 
@@ -183,7 +184,6 @@ public class GameService {
             now += delta;
           }
 
-          GameService.this.receiver = null;
           System.out.printf("Remote games count %d\n", remoteURLs.size());
         } catch (SocketException e) {
           e.printStackTrace();
@@ -201,6 +201,8 @@ public class GameService {
     } catch (ExecutionException ex) {
       System.err.println(ex.getMessage());
     } catch (TimeoutException ex) {
+    } finally {
+      receiver = null;
     }
   }
 
