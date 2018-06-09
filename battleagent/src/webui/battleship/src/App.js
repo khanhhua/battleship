@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
 import './App.css';
-import LoginPage from './LoginPage';
+import CreateRoomPage from './CreateRoomPage';
+import LobbyPage from './LobbyPage';
 import GamePage from './GamePage';
 
 class App extends Component {
@@ -15,8 +16,9 @@ class App extends Component {
 
         <Router>
           <div>
-            <Route exact path="/" component={LoginPage} />
-            <Route exact path="/play" component={GamePage} />
+            <Route exact path="/" component={CreateRoomPage} />
+            <Route exact path="/lobby" component={LobbyPage} />
+            <Route exact path="/play/:id" component={GamePage} />
           </div>
         </Router>
       </div>

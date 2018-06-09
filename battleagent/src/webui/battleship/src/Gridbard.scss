@@ -1,0 +1,40 @@
+$tracker-size: 32px;
+$primary-size: 48px;
+
+.gridboard {
+
+  .gridboard-header-cell {
+    display: inline-block;
+    width: $primary-size;
+    height: 32px;
+
+    text-align: center;
+  }
+
+  .gridboard-row {
+
+  }
+
+  .gridboard-cell {
+    display: inline-block;
+    width: $primary-size;
+    height: $primary-size;
+
+    border-width: 0 1px 1px 0;
+    border-color: #222;
+    border-style: dashed;
+  }
+}
+
+.gridboard.tracker {
+  .gridboard-header-cell {
+    width: $tracker-size;
+    height: $tracker-size;
+  }
+
+  .gridboard-cell {
+    width: $tracker-size;
+    height: $tracker-size;
+  }
+}
+
