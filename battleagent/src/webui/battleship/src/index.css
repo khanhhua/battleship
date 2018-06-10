@@ -14,3 +14,11 @@ body {
   width: 32px;
   height: 32px;
 }
+
+.ship-icon {
+  display: inline-block;
+  height: 1.5em;
+  width: 2em;
+  text-align: center;
+  background: white;
+}

@@ -55,6 +55,10 @@ function getGame(req) {
   return success(games.find(({id}) => parseInt(req.params.id, 10) === id));
 }
 
+function setLayout(req) {
+  return success('ok');
+}
+
 function startGame() {
   return success(games.find(it => it.owned === true));
 }
@@ -67,6 +71,7 @@ const server = new Pretender();
 server.post('/api/rooms', createRoom, 2000);
 server.get('/api/games', getGames, 2000);
 server.get('/api/games/:id', getGame, 2000);
+server.post('/api/games/:id/layout', setLayout, 2000);
 server.post('/api/games/start', startGame, 2000);
 server.post('/api/games/:id/join', joinGame, 2000);
 

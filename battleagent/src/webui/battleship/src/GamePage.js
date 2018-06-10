@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { observer, inject } from 'mobx-react';
 
-import Gridboard from 'Gridboard';
+import Gridboard from 'components/Gridboard';
+import ShipLayout from "./components/ShipLayout";
 
 @inject('store')
 @observer
@@ -37,11 +38,19 @@ class GamePage extends Component {
 
         </div>
 
+        {status === 1 &&
+        <div className="col-sm-8">
+          <ShipLayout game={activeGame} />
+        </div>
+        }
+
+        {status === 2 &&
         <div className="col-sm-5">
           <h3>Tracker</h3>
-          <Gridboard mode="tracker" size={size} />
+          <Gridboard mode="tracker" size={size}/>
         </div>
-
+        }
+        {status === 2 &&
         <div className="col-sm-3">
           <h4>Scoreboard</h4>
           <ul className="list-group">
@@ -51,11 +60,14 @@ class GamePage extends Component {
             }
           </ul>
         </div>
+        }
       </div>
+
+      {status === 2 &&
       <div className="row mt-3">
         <div className="col-sm-7 offset-sm-1">
           <h2>Primary table</h2>
-          <Gridboard mode="primary" size={size} />
+          <Gridboard mode="primary" size={size}/>
         </div>
         <div className="col-sm-4">
           <h4>Ships</h4>
@@ -70,6 +82,7 @@ class GamePage extends Component {
           </ul>
         </div>
       </div>
+      }
     </div>
   }
 }

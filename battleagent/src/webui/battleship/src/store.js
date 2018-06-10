@@ -90,6 +90,67 @@ export class Game {
   @observable loading = false;
   @observable activities = [];
 
+  @observable ships = [
+    {
+      name: 'Destroyer',
+      shipID: '0',
+      hitPoints: 2,
+      x: undefined,
+      y: undefined,
+      orientation: undefined
+    },
+    {
+      name: 'Destroyer',
+      shipID: '1',
+      hitPoints: 2,
+      x: undefined,
+      y: undefined,
+      orientation: undefined
+    },
+    {
+      name: 'Submarine',
+      shipID: '2',
+      hitPoints: 3,
+      x: undefined,
+      y: undefined,
+      orientation: undefined
+    }
+    ,
+    {
+      name: 'Cruiser',
+      shipID: '3',
+      hitPoints: 3,
+      x: undefined,
+      y: undefined,
+      orientation: undefined
+    }
+    ,
+    {
+      name: 'Cruiser',
+      shipID: '4',
+      hitPoints: 3,
+      x: undefined,
+      y: undefined,
+      orientation: undefined
+    },
+    {
+      name: 'Battleship',
+      shipID: '5',
+      hitPoints: 4,
+      x: undefined,
+      y: undefined,
+      orientation: undefined
+    },
+    {
+      name: 'Carrier',
+      shipID: '6',
+      hitPoints: 5,
+      x: undefined,
+      y: undefined,
+      orientation: undefined
+    }
+  ];
+
   id = null;
   owned = false;
 
@@ -105,5 +166,29 @@ export class Game {
     this.status = status;
     this.owner = owner;
     this.opponent = opponent;
+  }
+
+  @action setLayout(shipID, x, y, orientation) {
+    const index = this.ships.findIndex(({shipID:id}) => id == shipID);
+    if (index === -1) {
+      return;
+    }
+    const ship = Object.assign({}, this.ships.find(({shipID:id}) => id == shipID), {x, y, orientation});
+    this.ships.splice(index, 1, ship);
+  }
+
+  @action commitLayout() {
+    const positions = this.ships.map(({ x, y, orientation }) => { x, y, orientation });
+
+    return fetch(`/api/games/${this.id}/layout`, {
+      method: 'POST',
+      body: JSON.stringify(positions)
+    }).then(res => res.json()).then(payload => {
+      return payload === 'ok';
+    });
+  }
+
+  @computed get unboundShips() {
+    return this.ships.filter(it => typeof it.orientation === 'undefined');
   }
 }
