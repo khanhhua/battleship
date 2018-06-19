@@ -71,12 +71,12 @@ public class RoomsControllerTest {
         }
       });
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.put("Accept", Collections.singletonList("application/json"));
+      HttpHeaders headers = new HttpHeaders();
+      headers.put("Accept", Collections.singletonList("application/json"));
 
-        Game[] actual = this.restTemplate.getForObject("/api/rooms", Game[].class);
+      Game[] actual = this.restTemplate.getForObject("/api/rooms", Game[].class);
 
-        assertThat(actual[0].getId()).isEqualTo(1234567890L);
+      assertThat(actual[0].getId()).isEqualTo(1234567890L);
     }
 
     @Test

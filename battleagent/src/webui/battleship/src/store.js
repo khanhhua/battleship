@@ -50,6 +50,7 @@ export default class Store {
     return fetch(`/api/games/${gameID}`).then(res => res.json()).then(payload => {
       this.loading = false;
       this.activeGame = new Game(payload);
+      this.activeGame.listen();
 
       return true;
     });
@@ -87,6 +88,11 @@ export class User {
 }
 
 export class Game {
+  static STATUS_PENDING = 1;
+  static STATUS_READY = 2;
+  static STATUS_PLAYING = 3;
+  static STATUS_COMPLETE = 4;
+
   @observable loading = false;
   @observable activities = [];
 
@@ -155,9 +161,10 @@ export class Game {
   owned = false;
 
   size = 0;
-  status = 0;
   owner = null;
-  opponent = null
+  @observable opponent = null;
+
+  @observable status= 0;
 
   constructor({id, owned, size, status, owner, opponent}) {
     this.id = id;
@@ -166,6 +173,21 @@ export class Game {
     this.status = status;
     this.owner = owner;
     this.opponent = opponent;
+  }
+
+  listen() {
+    const sse = new EventSource(`/sse/games/${this.id}`);
+
+    sse.addEventListener('message', (e) => {
+      const data = JSON.parse(e.data);
+      switch (data.type) {
+        case 'status': this.status = data.status; break;
+        case 'opponent': this.opponent = data.opponent; break;
+        case 'ships': this.ships = data.ships; break;
+      }
+    });
+
+    this.sse = sse;
   }
 
   @action setLayout(shipID, x, y, orientation) {
@@ -178,13 +200,15 @@ export class Game {
   }
 
   @action commitLayout() {
-    const positions = this.ships.map(({ x, y, orientation }) => { x, y, orientation });
+    const positions = this.ships.map(it => ({ x: it.x, y: it.y, orientation: it.orientation }));
 
     return fetch(`/api/games/${this.id}/layout`, {
       method: 'POST',
       body: JSON.stringify(positions)
     }).then(res => res.json()).then(payload => {
-      return payload === 'ok';
+      if (payload === 'ok') {
+        this.status = Game.STATUS_READY;
+      }
     });
   }
 

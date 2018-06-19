@@ -1,4 +1,50 @@
 import Pretender from 'fetch-pretender';
+import _ from 'lodash';
+
+const initialShips = [
+  {
+    "name": "Destroyer",
+    "x": null,
+    "y": null,
+    "orientation": null
+  },
+  {
+    "name": "Destroyer",
+    "x": null,
+    "y": null,
+    "orientation": null
+  },
+  {
+    "name": "Submarine",
+    "x": null,
+    "y": null,
+    "orientation": null
+  },
+  {
+    "name": "Cruiser",
+    "x": null,
+    "y": null,
+    "orientation": null
+  },
+  {
+    "name": "Cruiser",
+    "x": null,
+    "y": null,
+    "orientation": null
+  },
+  {
+    "name": "Battleship",
+    "x": null,
+    "y": null,
+    "orientation": null
+  },
+  {
+    "name": "Carrier",
+    "x": null,
+    "y": null,
+    "orientation": null
+  }
+];
 
 const games = [
   {
@@ -56,6 +102,10 @@ function getGame(req) {
 }
 
 function setLayout(req) {
+  const game = games.find(({id}) => parseInt(req.params.id, 10) === id);
+  const positions = JSON.parse(req.requestBody);
+
+  game.ships = _.assign([], _.zip(initialShips, positions).map(([i, p]) => _.assign(i, p)));
   return success('ok');
 }
 
