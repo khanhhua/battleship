@@ -1,0 +1,155 @@
+$tracker-size: 32px;
+$primary-size: 48px;
+
+.gridboard {
+  position: relative;
+  background-color: white;
+
+  .gridboard-header-cell {
+    display: inline-block;
+    width: $primary-size;
+    height: 32px;
+
+    text-align: center;
+  }
+
+  .gridboard-row {
+
+  }
+
+  .gridboard-cell {
+    display: inline-block;
+    width: $primary-size;
+    height: $primary-size;
+
+    border-width: 0 1px 1px 0;
+    border-color: #222;
+    border-style: dashed;
+
+    background-color: white;
+
+    &.drop-active {
+      outline: 2px solid #ffc508;
+      outline-offset: -1px;
+    }
+  }
+
+  .gridboard-ships {
+    position: absolute;
+    left: $primary-size;
+    top: $primary-size;
+    width: ($primary-size * 10);
+    height: ($primary-size * 10);
+
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .gridboard-ship {
+    display: block;
+    position: absolute;
+    background-color: black;
+
+    &.hits-2 {
+      background-color: #ffc508;
+    }
+    &.hits-3 {
+      background-color: #2299ee;
+    }
+    &.hits-4 {
+      background-color: crimson;
+    }
+    &.hits-5 {
+      background-color: deeppink;
+    }
+
+    &.horizontal {
+      height: $primary-size;
+
+      &.hits-2 {
+        width: ($primary-size * 2);
+      }
+      &.hits-3 {
+        width: ($primary-size * 3);
+      }
+      &.hits-4 {
+        width: ($primary-size * 4);
+      }
+      &.hits-5 {
+        width: ($primary-size * 5);
+      }
+    }
+
+    &.vertical {
+      width: $primary-size;
+
+      &.hits-2 {
+        height: ($primary-size * 2);
+      }
+      &.hits-3 {
+        height: ($primary-size * 3);
+      }
+      &.hits-4 {
+        height: ($primary-size * 4);
+      }
+      &.hits-5 {
+        height: ($primary-size * 5);
+      }
+    }
+  }
+}
+
+.gridboard.tracker {
+  .gridboard-header-cell {
+    width: $tracker-size;
+    height: $tracker-size;
+  }
+
+  .gridboard-cell {
+    width: $tracker-size;
+    height: $tracker-size;
+  }
+
+  .gridboard-ships {
+    left: $tracker-size;
+    top: $tracker-size;
+    width: ($tracker-size * 10);
+    height: ($tracker-size * 10);
+  }
+
+  .gridboard-ship {
+    &.horizontal {
+      height: $tracker-size;
+
+      &.hits-2 {
+        width: ($tracker-size * 2);
+      }
+      &.hits-3 {
+        width: ($tracker-size * 3);
+      }
+      &.hits-4 {
+        width: ($tracker-size * 4);
+      }
+      &.hits-5 {
+        width: ($tracker-size * 5);
+      }
+    }
+
+    &.vertical {
+      width: $tracker-size;
+
+      &.hits-2 {
+        height: ($tracker-size * 2);
+      }
+      &.hits-3 {
+        height: ($tracker-size * 3);
+      }
+      &.hits-4 {
+        height: ($tracker-size * 4);
+      }
+      &.hits-5 {
+        height: ($tracker-size * 5);
+      }
+    }
+  }
+}
