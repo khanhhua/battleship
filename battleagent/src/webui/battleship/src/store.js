@@ -13,6 +13,8 @@ export default class Store {
     fetch('/api/games').then(res => res.json()).then((games) => {
       this.loading = false;
       this.games = games;
+    }).catch(e => {
+      this.loading = false;
     });
   }
 
@@ -76,6 +78,9 @@ export class User {
         {
           body: JSON.stringify({username, password}),
           method: 'POST',
+          headers: {
+            'content-type': 'application/json'
+          },
         }
       )
       .then(response => response.json())

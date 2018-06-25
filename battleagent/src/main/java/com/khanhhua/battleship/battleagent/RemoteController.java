@@ -14,6 +14,17 @@ public class RemoteController {
     @Autowired
     private GameService gameService;
 
+    @GetMapping(value = "/games/{id}", produces = "application/json")
+    public Game getGame(@PathVariable("id") long gameID) throws IllegalAccessException {
+      Game game = gameService.findByID(gameID);
+      if (!game.isOwned()) {
+        throw new IllegalAccessException("Permission denied");
+      }
+
+      System.out.printf("Found game %s\n", game.toString());
+
+      return game;
+    }
     /**
      * Accepts a start game request from the owner of the game
      *
@@ -23,7 +34,7 @@ public class RemoteController {
      * @throws IllegalAccessException
      */
     @PutMapping(value = "/games/{id}", produces = "application/json")
-    public String updateGame(@PathVariable("id") int gameID, @RequestBody HashMap<String, Object> updates) throws IllegalAccessException {
+    public String updateGame(@PathVariable("id") long gameID, @RequestBody HashMap<String, Object> updates) throws IllegalAccessException {
         Game game = gameService.findByID(gameID);
         if (game.isOwned()) {
             throw new IllegalAccessException("Permission denied");
@@ -44,7 +55,7 @@ public class RemoteController {
      * @return
      */
     @PostMapping(value = "/games/{id}/players", produces = "application/json")
-    public String joinGame(@PathVariable("id") int gameID, @RequestBody Player player) {
+    public String joinGame(@PathVariable("id") long gameID, @RequestBody Player player) {
         Game game = gameService.findByID(gameID);
         game.setOppoent(player);
 
@@ -60,7 +71,7 @@ public class RemoteController {
      * @return
      */
     @PostMapping(value = "/games/{id}/verify-hit", produces = "application/json")
-    public String verifyHit(@PathVariable int gameID, @RequestBody Shot shot) {
+    public String verifyHit(@PathVariable long gameID, @RequestBody Shot shot) {
         return "\"ok\"";
     }
 

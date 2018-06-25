@@ -1,5 +1,6 @@
 package com.khanhhua.battleship.battleagent;
 
+import com.khanhhua.battleship.commons.Game;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,9 +9,11 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -20,6 +23,14 @@ public class GameServiceTest {
 
   @Autowired
   private ThreadPoolTaskExecutor taskExecutor;
+
+  @Test
+  public void createGame() {
+    gameService.login("Tom");
+    Game game = gameService.createGame();
+    assertThat(game.getOwner()).isNotNull();
+    assertThat(game.getOwner().getName()).isEqualTo("Tom");
+  }
 
   @Test
   public void discoverGames() {

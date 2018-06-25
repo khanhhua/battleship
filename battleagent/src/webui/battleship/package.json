@@ -104,5 +104,11 @@
     "fetch-pretender": "^1.5.0",
     "node-sass": "^4.9.0",
     "sass-loader": "^7.0.3"
+  },
+  "proxy": {
+    "/api": {
+      "target": "http://localhost:8080",
+      "secure": false
+    }
   }
 }

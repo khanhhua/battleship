@@ -22,7 +22,7 @@ import static java.lang.Thread.*;
 
 @Service
 public class GameService {
-  public static final int SERVICE_PORT = 9191;
+  public static final int SERVICE_PORT = 8080;
   public static final int BROADCAST_PORT = 9190;
 
   final int DEFAULT_GAME_SIZE = 10;
@@ -45,6 +45,8 @@ public class GameService {
   }
 
   public void login(String name) {
+    System.out.printf("login(): name = %s\n", name);
+
     this.player = new Player();
     this.player.setName(name);
   }
@@ -74,7 +76,7 @@ public class GameService {
     }
   }
 
-  public Game joinGame(int gameID) {
+  public Game joinGame(long gameID) {
     String url = remoteURLs.get(gameID);
     RestTemplate template;
 
@@ -123,11 +125,15 @@ public class GameService {
     if (id == this.localGame.getId()) {
       return localGame;
     } else if (remoteURLs.containsKey(id)) {
-      String url = remoteURLs.get(id);
-
+      String uri = remoteURLs.get(id);
+      System.out.printf("Finding game at %s\n", uri);
       try {
         RestTemplate template = new RestTemplate();
-        return template.getForObject(url, Game.class);
+        Game game = template.getForObject(uri, Game.class);
+        game.setOwned(false);
+        game.setUri(uri);
+
+        return game;
       } catch (RestClientException ex) {
         System.err.printf("Could not find localGame %d. Reason: %s\n", id, ex.getMessage());
         return null;
@@ -155,8 +161,10 @@ public class GameService {
 
     receiver = new Runnable() {
       public void run() {
+        DatagramSocket socket = null;
+
         try {
-          DatagramSocket socket = new DatagramSocket(BROADCAST_PORT);
+          socket = new DatagramSocket(BROADCAST_PORT);
           long now = System.currentTimeMillis();
           long timeout = 5000L;
 
@@ -189,6 +197,11 @@ public class GameService {
           e.printStackTrace();
         } catch (IOException e) {
           e.printStackTrace();
+        } finally {
+          if (socket != null && !socket.isClosed()) {
+            socket.close();
+          }
+          receiver = null;
         }
       }
     };
@@ -201,8 +214,6 @@ public class GameService {
     } catch (ExecutionException ex) {
       System.err.println(ex.getMessage());
     } catch (TimeoutException ex) {
-    } finally {
-      receiver = null;
     }
   }
 
